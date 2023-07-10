@@ -1,7 +1,7 @@
 name: Nightly Build
 on:
-  push:                # May want to have push and workflow_dispatch
-  workflow_dispatch:   # triggers to help with developing a scheduled workflow
+  push:
+  workflow_dispatch:
   schedule:
     - cron: '*/20 * * * *'
 jobs:
@@ -11,6 +11,7 @@ jobs:
       - name: Create a tag for the archive
         run: echo "::set-output name=TAG::$(date +%F)"
         id: tag
+        # sets an output variable named TAG with the value of the current date in the format YYYY-MM-DD. The echo "::set-output name=TAG::$(date +%F)" command uses the echo command to print a string that sets the output variable. The ::set-output name=TAG:: syntax is used to set the output variable, and the $(date +%F) command substitution is used to insert the current date into the string.
         
       - name: Starting the nightly build for ${{ steps.tag.outputs.TAG }}
         run: echo "The tag is ${{ steps.tag.outputs.TAG }}"
@@ -20,9 +21,12 @@ jobs:
         
       - name: Create the artifact
         run: tar -cvf nightly-${{ steps.tag.outputs.TAG }}.tar ./*
-        
+        # creates a tar archive named nightly-<TAG>.tar
+        # -c option tells tar to create a new archive, the -v option tells it to verbosely list the files being archived, and the -f option specifies the name of the archive file. The ./* argument tells tar to archive all files in the current directory
+
       - name: Upload the artifact
         uses: actions/upload-artifact@v2
         with:
          name: nightly-${{ steps.tag.outputs.TAG }}.tar
          path: nightly-${{ steps.tag.outputs.TAG }}.tar
+
